@@ -1,0 +1,4 @@
+- name: First Domain
+  url: https://www.example.com
+- name: Second Domain
+  url: https://www.google.com
