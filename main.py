@@ -1,22 +1,32 @@
-import yaml
-import requests
+"""Module for monitoring endpoints when provided a YAML file."""
 import time
 from collections import defaultdict
 
-# Function to load configuration from the YAML file
+import requests
+import yaml
+
+
+
 def load_config(file_path):
-    with open(file_path, 'r') as file:
+    """
+    Function to load configuration from the YAML file.
+    """
+    with open(file_path, "r", encoding='utf-8') as file:
         return yaml.safe_load(file)
 
-# Function to perform health checks
+
+
 def check_health(endpoint):
-    url = endpoint['url']
-    method = endpoint.get('method')
-    headers = endpoint.get('headers')
-    body = endpoint.get('body')
+    """
+    Function to perform health checks.
+    """
+    url = endpoint["url"]
+    method = "GET" if endpoint.get("method") is None else endpoint.get("method")
+    headers = endpoint.get("headers")
+    body = endpoint.get("body")
 
     try:
-        response = requests.request(method, url, headers=headers, json=body)
+        response = requests.request(method, url, headers=headers, json=body, timeout=.5)
         if 200 <= response.status_code < 300:
             return "UP"
         else:
@@ -24,8 +34,12 @@ def check_health(endpoint):
     except requests.RequestException:
         return "DOWN"
 
-# Main function to monitor endpoints
+
+
 def monitor_endpoints(file_path):
+    """
+    Main function to monitor endpoints.
+    """
     config = load_config(file_path)
     domain_stats = defaultdict(lambda: {"up": 0, "total": 0})
 
@@ -45,6 +59,7 @@ def monitor_endpoints(file_path):
 
         print("---")
         time.sleep(15)
+
 
 # Entry point of the program
 if __name__ == "__main__":
